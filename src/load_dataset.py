@@ -1,5 +1,6 @@
 import scipy.io
 from typing import List
+import numpy as np
 
 CLASS_INDEX_TABLE = {
     '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9,
@@ -8,17 +9,27 @@ CLASS_INDEX_TABLE = {
     'U': 30, 'V': 31, 'W': 32, 'X': 33, 'Y': 34, 'Z': 35
 }
 
-def lire_alpha_digit( caracteres: List, chemin: str ="../data/binaryalphadigs.mat"):
+def lire_alpha_digit( caracteres: List, chemin: str ="../data/binaryalphadigs.mat") -> np.array:
+    """
+    :param caracteres: Caractères à traiter Ex: ['0', 'A', 'D']
+    :param chemin: Chemin du dataset
+    :return: Array des 36 elements pour chaque caractères demandé
+    """
+
     if not caracteres:
-        raise ValueError("Aucun caractère fourni en paramètre")
-    if not all(elem in CLASS_INDEX_TABLE for elem in caracteres)
+        raise ValueError("Aucun caractère fourni en paramètre !")
+    if not all(elem in CLASS_INDEX_TABLE for elem in caracteres):
+        raise ValueError("Utiliser des caractères valides !")
 
-    mat_file = scipy.io.loadmat(chemin)
-    print(mat_file.keys())
+    try:
+        dataset_mat = scipy.io.loadmat(chemin)
+    except:
+        raise ValueError("Fichier non existant !")
 
-    data = mat_file['classlabels']
-    print(data)
+    dataset = np.array([])
+    for caractere in caracteres:
+        class_data = dataset_mat['dat'][CLASS_INDEX_TABLE[caractere]]
+        dataset = np.concatenate((dataset, class_data))
 
+    return dataset
 
-if __name__ == "__main__":
-    lire_alpha_digit()
