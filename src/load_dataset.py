@@ -4,7 +4,7 @@ from torchvision import datasets, transforms
 from PIL import Image
 import os
 
-from utilis.utilis import colored_print, bcolors
+from src.utilis.utilis import colored_print, bcolors
 
 CLASS_INDEX_TABLE = {
     '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9,
@@ -13,7 +13,21 @@ CLASS_INDEX_TABLE = {
     'U': 30, 'V': 31, 'W': 32, 'X': 33, 'Y': 34, 'Z': 35
 }
 
-def lire_alpha_digit(caracteres: list, chemin: str ="../data/binaryalphadigs.mat") -> np.array:
+def get_image_size(chemin: str ="data/binaryalphadigs.mat") -> tuple:
+    """
+    Retourne la taille d'une image du dataset binaryalphadigs.mat
+
+    :param chemin: Chemin du dataset
+    :return: Taille de l'image
+    """
+    try:
+        data = scipy.io.loadmat(chemin)
+    except:
+        raise ValueError("Fichier non existant !")
+
+    return data['dat'][0][0].shape
+
+def lire_alpha_digit(caracteres: list, chemin: str ="data/binaryalphadigs.mat") -> np.array:
     """
     Retourne un dataset de binaryalphadigs.mat pour les caractères demandés
 
@@ -29,17 +43,14 @@ def lire_alpha_digit(caracteres: list, chemin: str ="../data/binaryalphadigs.mat
         raise ValueError("Utiliser des caractères valides !")
 
     try:
-        dataset_mat = scipy.io.loadmat(chemin)
+        data = scipy.io.loadmat(chemin)
     except:
         raise ValueError("Fichier non existant !")
 
-    dataset = []
-    for caractere in caracteres:
-        class_data = dataset_mat['dat'][CLASS_INDEX_TABLE[caractere.upper()]]
-        dataset.append(class_data)
-    dataset = np.concatenate(dataset)
+    X = np.concatenate([data['dat'][CLASS_INDEX_TABLE[char]].flatten() for char in caracteres], axis=0)
+    X = np.array([element.flatten() for element in X])
 
-    return dataset
+    return X
 
 def lire_mnist_digits(characters: list , data_dir: str ="../data", examples_per_char=39) -> np.ndarray:
     """
