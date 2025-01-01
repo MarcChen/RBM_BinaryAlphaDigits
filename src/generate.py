@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
 from src.RBM_model import RBM
 
 def display_images(images: list, size: tuple) -> None:

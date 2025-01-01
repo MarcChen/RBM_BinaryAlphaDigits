@@ -10,10 +10,4 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 def colored_print(color, text):
-    """
-    Print text with the specified color and reset to default color at the end.
-    Args:
-        color (str): The color code from the bcolors class.
-        text (str): The text to print.
-    """
     print(f"{color}{text}{bcolors.ENDC}")
